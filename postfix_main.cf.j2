@@ -1,0 +1,11 @@
+myhostname = {{ domain_name }}
+mydomain = {{ domain_name }}
+myorigin = $mydomain
+inet_interfaces = all
+inet_protocols = all
+mydestination = $myhostname, localhost.$mydomain, localhost, $mydomain
+mynetworks = 127.0.0.0/8, [::1]/128
+relay_domains = 
+home_mailbox = Maildir/
+smtpd_banner = $myhostname ESMTP
+

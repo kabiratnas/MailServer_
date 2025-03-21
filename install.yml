@@ -1,0 +1,25 @@
+---
+- name: Install Required Packages (Postfix, Dovecot, Roundcube)
+  hosts: localhost
+  become: yes
+  tasks:
+    - name: Update package cache
+      apt:
+        update_cache: yes
+
+    - name: Install Postfix, Dovecot, and Roundcube
+      apt:
+        name:
+          - postfix
+          - dovecot-core
+          - dovecot-imapd
+          - dovecot-pop3d
+          - dovecot-lmtpd
+          - dovecot-mysql
+          - roundcube
+          - roundcube-mysql
+          - roundcube-plugins
+          - ssl-cert
+        state: present
+
+

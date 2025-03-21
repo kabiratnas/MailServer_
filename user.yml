@@ -1,0 +1,57 @@
+---
+- name: Create Users and Configure Roundcube
+  hosts: mail_servers
+  become: yes
+  vars:
+    domain_name: "172.31.32.169"
+    mail_users:
+      - { name: "user1", password: "password1" }
+      - { name: "user2", password: "password2" }
+      - { name: "user3", password: "password3" }
+  tasks:
+    - name: Create Mail Directories for Each User
+      file:
+        path: "/var/mail/vhosts/{{ domain_name }}/{{ item.name }}"
+        state: directory
+        owner: vmail
+        group: vmail
+        mode: "770"
+      loop: "{{ mail_users }}"
+
+    - name: Configure Virtual Users for Dovecot
+      copy:
+        dest: "/etc/dovecot/users"
+        content: |
+          {% for user in mail_users %}
+          {{ user.name }}@{{ domain_name }}:{{ user.password }}::::::
+          {% endfor %}
+        owner: root
+        group: dovecot
+        mode: "600"
+      notify: Restart Dovecot
+
+    - name: Set up Roundcube configuration
+      template:
+        src: roundcube_config.inc.php.j2
+        dest: /etc/roundcube/config.inc.php
+      notify: Restart Apache
+
+    - name: Ensure Postfix and Dovecot are enabled
+      service:
+        name: "{{ item }}"
+        enabled: yes
+      loop:
+        - postfix
+        - dovecot
+
+  handlers:
+    - name: Restart Dovecot
+      service:
+        name: dovecot
+        state: restarted
+
+    - name: Restart Apache
+      service:
+        name: apache2
+        state: restarted
+

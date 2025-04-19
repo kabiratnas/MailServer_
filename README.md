@@ -1,5 +1,3 @@
-# Mail-Server
-
 # Mail Server Automation with Ansible
 
 This project automates the deployment and configuration of a basic mail server using Ansible. It installs Postfix, configures it using a Jinja2 template, and manages user creation through dedicated playbooks.
